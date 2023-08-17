@@ -1,4 +1,4 @@
-import { g, auth, config} from "@grafbase/sdk";
+import { g, auth, config } from "@grafbase/sdk";
 
 // Welcome to Grafbase!
 // Define your data models, integrate auth, permission rules, custom resolvers, search, and more with Grafbase.
@@ -12,36 +12,45 @@ import { g, auth, config} from "@grafbase/sdk";
 // Define Data Models
 // https://grafbase.com/docs/database
 
-const User = g.model("User", {
-    name: g.string().length({ max: 20, min: 3 }),
-    email: g.string().unique(),
-    avatarUrl: g.url(),
-    description: g.string().optional(),
-    githubUrl: g.url().unique(),
-    linkedInUrl: g.url().optional(),
-    projects: g
-      .relation(() => Project)
-      .list()
-      .optional(),
+const jwt = auth.JWT({
+    issuer: "grafbase",
+    secret: g.env("NEXTAUTH_SECRET"),
   }),
-  Project = g.model("Project", {
-    title: g.string().length({ min: 3 }),
-    description: g.string().optional(),
-    image: g.url(),
-    liveUrl: g.url().optional(),
-    githubUrl: g.url().optional(),
-    category: g.string().search(),
-    createdBy: g.relation(() => User),
-  });
+  User: any = g
+    .model("User", {
+      name: g.string().length({ min: 2, max: 100 }),
+      email: g.string().unique(),
+      avatarUrl: g.url(),
+      description: g.string().length({ min: 2, max: 1000 }).optional(),
+      githubUrl: g.url().optional(),
+      linkedInUrl: g.url().optional(),
+      projects: g
+        .relation(() => Project)
+        .list()
+        .optional(),
+    })
+    .auth((rules) => {
+      rules.public().read();
+    }),
+  Project: any = g
+    .model("Project", {
+      title: g.string().length({ min: 3 }),
+      description: g.string(),
+      image: g.url(),
+      liveSiteUrl: g.url(),
+      githubUrl: g.url(),
+      category: g.string().search(),
+      createdBy: g.relation(() => User),
+    })
+    .auth((rules) => {
+      rules.public().read();
+      rules.private().create().delete().update();
+    });
 
 export default config({
   schema: g,
-  // Integrate Auth
-  // https://grafbase.com/docs/auth
-  // auth: {
-  //   providers: [authProvider],
-  //   rules: (rules) => {
-  //     rules.private()
-  //   }
-  // }
+  auth: {
+    providers: [jwt],
+    rules: (rules) => rules.private(),
+  },
 });

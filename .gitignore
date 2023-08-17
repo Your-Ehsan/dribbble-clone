@@ -36,3 +36,6 @@ next-env.d.ts
 
 #example folder
 /example
+
+#env variables
+.env
