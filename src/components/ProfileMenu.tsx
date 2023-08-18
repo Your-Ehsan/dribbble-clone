@@ -59,24 +59,18 @@ const ProfileMenu = ({ session }: { session: SessionInterface }) => {
 
             <div className="flex flex-col gap-3 pt-10 items-start w-full">
               <MenuItem text="Work Preferences" userId={session?.user.id} />
-              {/* TODO: convert this to MenuItem */}
-              <Menu.Item>
+
+              {/* <Menu.Item>
                 <Link
                   href={`/profile/${session?.user?.id}`}
                   className="text-sm"
                 >
                   Settings
                 </Link>
-              </Menu.Item>
-              {/* TODO: convert this to MenuItem */}
-              <Menu.Item>
-                <Link
-                  href={`/profile/${session?.user?.id}`}
-                  className="text-sm"
-                >
-                  Profile
-                </Link>
-              </Menu.Item>
+              </Menu.Item> */}
+              <MenuItem text="Settings" userId={session?.user?.id} />
+
+              <MenuItem text="Profile" userId={session?.user?.id} />
             </div>
             <div className="w-full flexStart border-t border-nav-border mt-5 pt-5">
               <Menu.Item>

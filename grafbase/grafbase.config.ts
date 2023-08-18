@@ -32,6 +32,7 @@ const jwt = auth.JWT({
     .auth((rules) => {
       rules.public().read();
     }),
+    
   Project: any = g
     .model("Project", {
       title: g.string().length({ min: 3 }),
