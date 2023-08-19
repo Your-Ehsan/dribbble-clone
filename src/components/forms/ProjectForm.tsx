@@ -1,13 +1,13 @@
 "use client";
-import { FormState, ProjectInterface, SessionInterface } from "@/types";
-import Image from "next/image";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { FormState, ProjectInterface, SessionInterface } from "@/types";
+import { categoryFilters } from "@/constants";
+import { useRouter } from "next/navigation";
+import { createNewProject, fetchToken, updateProject } from "@/lib/actions";
+import Image from "next/image";
 import FormField from "../ui/FormField";
 import CustomMenu from "../CustomMenu";
-import { categoryFilters } from "@/constants";
 import Button from "../ui/Button";
-import { createNewProject, fetchToken } from "@/lib/actions";
-import { useRouter } from "next/navigation";
 
 type Props = {
   type: string;
@@ -46,9 +46,23 @@ const ProjectForm = ({ type, session, project }: Props) => {
       const { token } = await fetchToken();
       try {
         if (type === "create") {
-          await createNewProject(form, session?.user?.id, token).then(() =>
-            _router.push("/"),
-          );
+          try {
+            await createNewProject(form, session?.user?.id, token).then(() =>
+              _router.push("/"),
+            );
+          } catch (error) {
+            console.log(error);
+            return error;
+          }
+        }
+        if (type === "edit") {
+          try {
+            await updateProject(form, project?.id as string, token);
+            _router.push("/");
+          } catch (error) {
+            console.log(error);
+            return error;
+          }
         }
         setIsSubmitting(true);
       } catch (error) {
